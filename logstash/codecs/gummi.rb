@@ -51,10 +51,10 @@ class LogStash::Codecs::Gummi < LogStash::Codecs::Base
       when "json"
         # try JSON parse
         begin
-          res = res.merge(JSON.parse(val))
+          res[key] = JSON.parse(val)
         rescue JSON::ParserError => e
-          res[key] = val
         end
+        res["plain_" + key] = val[0..256]
 
       when "integer"
         res[key] = val.to_i
