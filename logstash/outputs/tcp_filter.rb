@@ -10,9 +10,9 @@ require "json"
 #
 # Can either accept connections from clients or connect to a server,
 # depending on `mode`.
-class LogStash::Outputs::Tcp < LogStash::Outputs::Base
+class LogStash::Outputs::TcpFilter < LogStash::Outputs::Base
 
-  config_name "tcp"
+  config_name "tcp_filter"
   milestone 2
 
   default :codec, "json"
