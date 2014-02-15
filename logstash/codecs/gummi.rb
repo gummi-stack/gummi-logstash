@@ -32,7 +32,7 @@ class LogStash::Codecs::Gummi < LogStash::Codecs::Base
       "gummi_app" => "string",
       "gummi_worker" => "string",
       "gummi_output" => "integer",
-      "json" => "json"
+      "json" => "json" # & plain data into field message
     }
   end
   
