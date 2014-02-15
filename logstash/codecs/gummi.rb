@@ -23,20 +23,24 @@ class LogStash::Codecs::Gummi < LogStash::Codecs::Base
   # For nxlog users, you'll want to set this to "CP1252".
   config :charset, :validate => ::Encoding.name_list, :default => "UTF-8"
 
-  config :delimiter, :validate => :string, :default => " "
-
-  config :map, :validate => :hash, :required => true
-
   public
   def register
     @converter = LogStash::Util::Charset.new(@charset)
     @converter.logger = @logger
+    @map = {
+      "host_name" => "string",
+      "gummi_app" => "string",
+      "gummi_worker" => "string",
+      "gummi_output" => "integer",
+      "json" => "json"
+    }
   end
   
   public
   def decode(data)
     data = @converter.convert(data)
-    parts = data.split(@delimiter, @map.length)
+
+    parts = data.split(' ', @map.length)
 
     if parts.length < @map.length
       @logger.info("Parse failure - few parameters in data. Falling back to plain-text", :data => data)
@@ -45,16 +49,18 @@ class LogStash::Codecs::Gummi < LogStash::Codecs::Base
 
     res = {}
     @map.keys.each_with_index do |key, i|
-      val = parts[i]
+      val = parts[i].strip
 
       case @map[key]
       when "json"
         # try JSON parse
-        begin
-          res[key] = JSON.parse(val)
-        rescue JSON::ParserError => e
+        if val[0] == '{'
+          begin
+            res[key] = JSON.parse(val)
+          rescue JSON::ParserError => e
+          end
         end
-        res["plain_" + key] = val[0..256]
+        res["message"] = val[0..256]
 
       when "integer"
         res[key] = val.to_i
