@@ -29,6 +29,7 @@ class LogStash::Codecs::Gummi < LogStash::Codecs::Base
     @converter.logger = @logger
     @map = {
       "host_name" => "string",
+      "gummi_source" => "string",
       "gummi_app" => "string",
       "gummi_worker" => "string",
       "gummi_output" => "integer",
