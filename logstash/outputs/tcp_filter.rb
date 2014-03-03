@@ -101,6 +101,7 @@ class LogStash::Outputs::TcpFilter < LogStash::Outputs::Base
           skip = false
 
           if (!client_thread["filter"].nil?)
+            # TODO: vyresit cisla workeru
             client_thread["filter"].each do |key, value|
               if (!fields[key].nil?)
                 if ("#{fields[key]}" != "#{value}")

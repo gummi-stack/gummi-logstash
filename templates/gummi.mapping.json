@@ -1,0 +1,79 @@
+{
+    "order": 1,
+    "template": "gummi-*",
+    "settings": {
+        "index.store.compress.stored" : true,
+        "index.query.default_field" : "@message",
+        "index.number_of_replicas": "1",
+        "index.number_of_shards": "1"
+    },
+    "mappings": {
+        "_default_": {
+            "dynamic": "strict",
+            "properties": {
+                "@timestamp": {
+                    "type": "date",
+                    "index": "analyzed",
+                    "format": "dateOptionalTime"
+                },
+                "@version": {
+                    "type": "long"
+                },
+                "host": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+
+                "host_name": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "source": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "app": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "branch": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "worker": {
+                    "type": "multi_field",
+                    "fields": {
+                        "raw": {
+                            "type": "string",
+                            "index": "not_analyzed"
+                        },
+                        "message": {
+                            "type": "string",
+                            "index": "analyzed"
+                        }
+                    }
+                },
+                "output": {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "message": {
+                    "type": "multi_field",
+                    "fields": {
+                        "raw": {
+                            "index": "not_analyzed",
+                            "type": "string"
+                        },
+                        "message": {
+                            "index": "analyzed",
+                            "type": "string"
+                        }
+                    }
+                },
+                "json": {
+                    "enabled": false
+                }
+            }
+        }
+    }
+}
