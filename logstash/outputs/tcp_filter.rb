@@ -13,7 +13,7 @@ require "json"
 class LogStash::Outputs::TcpFilter < LogStash::Outputs::Base
 
   config_name "tcp_filter"
-  milestone 2
+  milestone 3
 
   default :codec, "json"
 

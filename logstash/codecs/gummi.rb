@@ -24,55 +24,64 @@ class LogStash::Codecs::Gummi < LogStash::Codecs::Base
   config :charset, :validate => ::Encoding.name_list, :default => "UTF-8"
 
   public
+  def initialize(params={})
+    super(params)
+    @lines = LogStash::Codecs::Line.new
+    @lines.charset = @charset
+  end
+
+  public
   def register
     @converter = LogStash::Util::Charset.new(@charset)
     @converter.logger = @logger
     @map = {
       "host_name" => "string",
-      "gummi_source" => "string",
-      "gummi_app" => "string",
-      "gummi_worker" => "string",
-      "gummi_output" => "integer",
+      "source" => "string",
+      "app" => "string",
+      "branch" => "string",
+      "worker" => "string",
+      "output" => "integer",
       "json" => "json" # & plain data into field message
     }
   end
   
   public
   def decode(data)
-    data = @converter.convert(data)
 
-    parts = data.split(' ', @map.length)
+    @lines.decode(data) do |event|
 
-    if parts.length < @map.length
-      @logger.info("Parse failure - few parameters in data. Falling back to plain-text", :data => data)
-      yield LogStash::Event.new("message" => data)
-    end
+      parts = event["message"].split(' ', @map.length)
 
-    res = {}
-    @map.keys.each_with_index do |key, i|
-      val = parts[i].strip
+      if parts.length < @map.length
+        @logger.info("Parse failure - few parameters in data. Falling back to plain-text", :data => data)
+        yield event
+      end
 
-      case @map[key]
-      when "json"
-        # try JSON parse
-        if val[0] == '{'
-          begin
-            res[key] = JSON.parse(val)
-          rescue JSON::ParserError => e
+      result = {}
+      @map.keys.each_with_index do |key, i|
+        val = parts[i].strip
+
+        case @map[key]
+        when "json"
+          # try JSON parse
+          if val[0] == '{'
+            begin
+              result[key] = JSON.parse(val)
+            rescue JSON::ParserError => e
+            end
           end
-        end
-        res["message"] = val[0..256]
+          result["message"] = val[0..256]
 
-      when "integer"
-        res[key] = val.to_i
+        when "integer"
+          result[key] = val.to_i
 
-      else
-        res[key] = val
+        else
+          result[key] = val
 
-      end # case
+        end # case
 
-    end
-    yield LogStash::Event.new(res)
+      end
+      yield LogStash::Event.new(result)
   end # def decode
 
   public
