@@ -82,6 +82,7 @@ class LogStash::Codecs::Gummi < LogStash::Codecs::Base
 
       end
       yield LogStash::Event.new(result)
+    end
   end # def decode
 
   public
