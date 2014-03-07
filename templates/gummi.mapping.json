@@ -3,7 +3,7 @@
     "template": "gummi-*",
     "settings": {
         "index.store.compress.stored" : true,
-        "index.query.default_field" : "@message",
+        "index.query.default_field" : "message",
         "index.number_of_replicas": "0",
         "index.number_of_shards": "1"
     },
