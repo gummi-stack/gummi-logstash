@@ -10,6 +10,9 @@
     "mappings": {
         "_default_": {
             "dynamic": "strict",
+            "_all" : {
+              "enabled" : false
+            },
             "properties": {
                 "@timestamp": {
                     "type": "date",
